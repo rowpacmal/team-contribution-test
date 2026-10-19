@@ -451,7 +451,7 @@ Semantic Versioning, handled by release-please:
 
 By default release-please bumps the **major** version for breaking changes even below 1.0 (0.44.0 → 1.0.0). Set `"bump-minor-pre-major": true` in `release-please-config.json` to get the table above.
 
-**New repo with no release tag yet:** release-please ignores the manifest and makes the first release 1.0.0. Set `"initial-version": "0.1.0"` in the config. With `release-type: simple`, commit a `version.txt` (e.g. `0.0.0`) too: release-please only updates it if it exists.
+**New repo with no release tag yet:** release-please ignores the manifest and makes the first release 1.0.0. Set `"initial-version": "0.1.0"` in the config. **Where the version lives:** `release-type: node` (`package.json` and `package-lock.json`) for our apps; they're all Node, and Edge Studio's `release.yml` checks the tag against `package.json`. Other languages have their own type (`python`, `rust`, …). `simple` uses a `version.txt`; commit it (e.g. `0.0.0`) first, release-please only updates it if it exists.
 
 Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only `refactor`/`docs`/`test`/`chore` PRs opens no release PR.
 

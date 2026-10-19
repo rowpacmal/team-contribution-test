@@ -57,6 +57,10 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                                  |
 | Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                                  |
 | Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                                  |
+| Release PR checks run without "Approve" (release token)                  | ⬜     |                                                                                  |
+| Pre-release tag starts `release.yml` (dev channel, images, manifest)     | ⬜     |                                                                                  |
+| Release tag: `package.json` matches tag, `release.yml` runs              | ⬜     |                                                                                  |
+| Only changed services rebuilt (`frontend/` vs `backend/`)                | ⬜     |                                                                                  |
 
 ## Part 5 — Code style
 
@@ -93,7 +97,7 @@ Add one line per finding: what happened, what changed (PR link).
 - Plain ESLint config doesn't know Node globals; the hook imports `process` from `node:process` instead of adding a globals config. (PR #5)
 - Hooks added mid-session don't load until Claude Code restarts; a push to `main` went through in that session. Live test passed in a new session.
 - First release PR (#8) said 1.0.0: with no release tag, release-please ignores the manifest `0.0.0` and uses 1.0.0. Added `"initial-version": "0.1.0"`, noted in Part 4.
-- `release-type: simple` only updates `version.txt` if it already exists; #8 didn't touch it. Added `version.txt` (`0.0.0`).
+- `release-type: simple` only updates `version.txt` if it already exists; #8 didn't touch it. Added `version.txt` (`0.0.0`); later moved to `package.json` (`release-type: node`) to match Edge Studio (PR #14).
 - Release PRs made with `GITHUB_TOKEN` do get checks, but they wait for "Approve workflows to run" (GitHub blocks automatic runs). A release token would remove the click.
 - Changelog turned `OP#690` into `OP[#690]` linking to GitHub issue 690 (doesn't exist). Moved the ticket from the title to the PR description (OpenProject reads it there); title check now fails on `OP#` in the title.
 - `BEGIN_COMMIT_OVERRIDE` replaces the whole commit message, so the changelog line lost its `(#7)` PR link. Override lines now end with `(#N)` (Part 4). release-please only re-reads overrides on its next run; added a manual trigger (`workflow_dispatch`).
