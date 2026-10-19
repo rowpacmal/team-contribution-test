@@ -22,8 +22,8 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | ------------------------------------------------------------- | ------ | -------------------------------------------------------- |
 | Valid title passes                                            | ✅     | PR #2                                                    |
 | Wrong type / capitalized subject / trailing period fails      | ✅     | Capitalized + period tested on PR #2; wrong type not yet |
-| `type/N-slug` branch without `OP#N` in description fails      | ⬜     |                                                          |
-| `OP#N` in the title fails                                     | ⬜     |                                                          |
+| `type/N-slug` branch without `OP#N` in description fails      | ✅     | PR #10                                                   |
+| `OP#N` in the title fails                                     | ✅     | PR #10                                                   |
 | Editing the title re-runs the check                           | ✅     | PR #2                                                    |
 | GitHub revert button → title fails → rename per Part 1 passes | ⬜     |                                                          |
 | Squash commit on `main` equals PR title + `(#PR)`, empty body | ✅     | PRs #1–#3                                                |
