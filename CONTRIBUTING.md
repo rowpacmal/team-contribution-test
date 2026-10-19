@@ -637,6 +637,7 @@ Today `CLAUDE.md`/`AGENTS.md`, `.claude/rules`/`.agents/rules`, and `.cursor/rul
 | `start-ticket`              | Reads the OpenProject ticket, creates `type/N-slug` branch from `main`, moves ticket to In progress |
 | `commit-message` (update)   | Writes a Part 1 title: `type(scope): subject`, present tense, user-facing for `feat`/`fix`          |
 | `open-pr`                   | Opens the PR with the template filled in, using GitHub CLI                                          |
+| `after-merge`               | After a merge: switches to `main`, pulls, deletes merged branches, reports the release PR           |
 | `release`                   | Triggers a pre-release (`-dev.N` / `-canary.N`) or explains how to merge the release PR             |
 | `plan-doc`, `session-notes` | Existing; review against the new rules                                                              |
 
