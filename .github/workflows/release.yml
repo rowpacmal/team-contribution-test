@@ -1,0 +1,183 @@
+# Dummy of Edge Studio's release.yml: same jobs, tag check and change detection,
+# tiny images to GHCR, and a pretend manifest (uploaded as an artifact instead of
+# signed and pushed to the manifests repo). See CONTRIBUTING.md Part 4.
+# Tags come from release-please and the pre-release button; they only start this
+# workflow when pushed with RELEASE_PLEASE_TOKEN, not GITHUB_TOKEN.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check production tag matches package.json version
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) ;;
+            *)
+              expected="v$(node -p "require('./package.json').version")"
+              if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+                echo "::error::Tag $GITHUB_REF_NAME does not match package.json version ($expected)"
+                exit 1
+              fi
+              ;;
+          esac
+
+      - name: Find previous release tag
+        id: prev-tag
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-dev.*)
+              prev=$(git tag --sort=-v:refname | grep -v "^${GITHUB_REF_NAME}$" | grep -- '-dev\.' | head -n1 || true)
+              ;;
+            *)
+              prev=$(git tag --sort=-v:refname | grep -v "^${GITHUB_REF_NAME}$" | grep -v -- '-' | head -n1 || true)
+              ;;
+          esac
+          echo "tag=$prev" >> "$GITHUB_OUTPUT"
+
+      - name: Detect changed service folders since previous release
+        id: filter
+        env:
+          PREV: ${{ steps.prev-tag.outputs.tag }}
+        run: |
+          if [ -z "$PREV" ]; then
+            echo "frontend=true" >> "$GITHUB_OUTPUT"
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+            echo "No previous tag: build everything" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          changed=$(git diff --name-only "$PREV" "$GITHUB_REF_NAME")
+          frontend=$(echo "$changed" | grep -q '^frontend/' && echo true || echo false)
+          backend=$(echo "$changed" | grep -q '^backend/' && echo true || echo false)
+          echo "frontend=$frontend" >> "$GITHUB_OUTPUT"
+          echo "backend=$backend" >> "$GITHUB_OUTPUT"
+          echo "Since \`$PREV\`: frontend=$frontend, backend=$backend" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      frontend-digest: ${{ steps.frontend-ref.outputs.ref }}
+      backend-digest: ${{ steps.backend-ref.outputs.ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Edge Studio also builds arm64 and arm/v7 (QEMU); amd64 only keeps the dummy fast.
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build and push frontend
+        if: needs.changes.outputs.frontend == 'true'
+        id: frontend-build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ./frontend
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.repository }}-frontend:${{ github.ref_name }}
+          build-args: |
+            APP_VERSION=${{ github.ref_name }}
+            APP_COMMIT=${{ github.sha }}
+
+      - name: Resolve frontend digest ref
+        if: needs.changes.outputs.frontend == 'true'
+        id: frontend-ref
+        run: echo "ref=ghcr.io/${{ github.repository }}-frontend@${{ steps.frontend-build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push backend
+        if: needs.changes.outputs.backend == 'true'
+        id: backend-build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ./backend
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}
+          build-args: |
+            APP_VERSION=${{ github.ref_name }}
+            APP_COMMIT=${{ github.sha }}
+
+      - name: Resolve backend digest ref
+        if: needs.changes.outputs.backend == 'true'
+        id: backend-ref
+        run: echo "ref=ghcr.io/${{ github.repository }}-backend@${{ steps.backend-build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
+  manifest:
+    needs: [changes, build]
+    if: always() && !cancelled() && !failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect release channel from tag
+        id: channel
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-dev.*) echo "channel=development" >> "$GITHUB_OUTPUT" ;;
+            *-canary.*) echo "channel=canary" >> "$GITHUB_OUTPUT" ;;
+            *) echo "channel=release" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      # Edge Studio falls back to the digests in the channel's previous manifest
+      # (manifests repo). Pretend: mark unchanged services instead.
+      - name: Build manifest
+        env:
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+          FRONTEND_DIGEST: ${{ needs.build.outputs.frontend-digest || 'unchanged (previous manifest)' }}
+          BACKEND_DIGEST: ${{ needs.build.outputs.backend-digest || 'unchanged (previous manifest)' }}
+        run: |
+          node -e '
+            const { env } = process;
+            const manifest = {
+              version: env.GITHUB_REF_NAME,
+              channel: env.CHANNEL,
+              commit: env.GITHUB_SHA,
+              frontend: env.FRONTEND_DIGEST,
+              backend: env.BACKEND_DIGEST,
+            };
+            require("node:fs").writeFileSync("manifest.json", JSON.stringify(manifest, null, 2) + "\n");
+          '
+          cat manifest.json
+
+      # Pretend signing: a checksum instead of the real signature.
+      - name: Sign manifest (pretend)
+        run: sha256sum manifest.json > manifest.json.sha256
+
+      - name: Summary
+        run: |
+          {
+            echo "### Manifest (\`${{ steps.channel.outputs.channel }}\`)"
+            echo '```json'
+            cat manifest.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload manifest artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: manifest
+          path: |
+            manifest.json
+            manifest.json.sha256

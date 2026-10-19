@@ -57,6 +57,10 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                                  |
 | Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                                  |
 | Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                                  |
+| Release PR checks run without "Approve" (release token)                  | ⬜     |                                                                                  |
+| Pre-release tag starts `release.yml` (dev channel, images, manifest)     | ⬜     |                                                                                  |
+| Release tag: `package.json` matches tag, `release.yml` runs              | ⬜     |                                                                                  |
+| Only changed services rebuilt (`frontend/` vs `backend/`)                | ⬜     |                                                                                  |
 
 ## Part 5 — Code style
 

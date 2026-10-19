@@ -5,7 +5,7 @@ description: Make a dev or canary pre-release tag, or check and explain the rele
 
 # Release
 
-Process: CONTRIBUTING.md, Part 4. Hotfix branches: Part 2 "Hotfixes". Never create tags or edit `CHANGELOG.md` / `version.txt` by hand.
+Process: CONTRIBUTING.md, Part 4. Hotfix branches: Part 2 "Hotfixes". Never create tags or edit `CHANGELOG.md` / the `package.json` version by hand.
 
 ## Pre-release (dev / canary)
 

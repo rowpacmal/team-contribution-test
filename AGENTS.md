@@ -15,7 +15,7 @@ Details and reasons are in CONTRIBUTING.md.
 
 - Never commit or push to `main`. Work on a `type/N-slug` branch and open a PR (Part 2).
 - PR titles follow Part 1. The PR title is what ends up on `main`; branch commit messages can be informal.
-- Never create release tags or edit `CHANGELOG.md` / `version.txt` by hand. release-please and the pre-release workflow do that (Part 4).
+- Never create release tags or edit `CHANGELOG.md` / the `package.json` version by hand. release-please and the pre-release workflow do that (Part 4).
 - Squash-merge only. Don't merge PRs unless the user asks.
 - When a rule turns out wrong or unclear while testing, fix it in CONTRIBUTING.md (in a `docs:` PR) and log it in the test plan. Don't work around it silently.
 
@@ -35,4 +35,5 @@ Details and reasons are in CONTRIBUTING.md.
 - No OpenProject access from here. Ask the user for the ticket number; current tickets are OP#690 (rules) and OP#692 (AI configs and skills).
 - Dummy code mimics Edge Studio: `backend/` and `frontend/`, vitest tests with Edge Studio's coverage thresholds (`vitest.config.ts`).
 - Checks: `npm run check` (Prettier, ESLint, tsc, vitest with coverage, `npm audit`). Python: `uvx ruff check` / `uvx ruff format`. Shell: ShellCheck. CI runs all of them (`.github/workflows/checks.yml`). A Claude hook formats each file after edit.
-- release-please uses `release-type: simple` (`version.txt`). No `RELEASE_PLEASE_TOKEN` yet, so it runs with `GITHUB_TOKEN`.
+- release-please uses `release-type: node` (version in `package.json`, like Edge Studio). It runs with `RELEASE_PLEASE_TOKEN` (fine-grained personal token, this repo only: contents + PRs), so its tags start `release.yml`.
+- `release.yml` is a dummy of Edge Studio's: same tag check and change detection, tiny images to GHCR, pretend manifest (uploaded as an artifact).
