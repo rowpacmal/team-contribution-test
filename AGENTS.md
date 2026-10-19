@@ -27,6 +27,7 @@ Details and reasons are in CONTRIBUTING.md.
 | `commit-message` | Write a PR title / squash commit               |
 | `open-pr`        | Push and open a PR with the template filled in |
 | `release`        | Pre-release tags and the release PR            |
+| `after-merge`    | Local cleanup after the user merges a PR       |
 
 ## Repo specifics
 

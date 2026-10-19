@@ -46,17 +46,17 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 ## Part 4 — Releases
 
-| Test                                                                     | Status | Notes                                                               |
-| ------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------- |
-| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                                     |
-| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⚠️     | PR #7 → #8 said 1.0.0, no `version.txt`. Fixed config               |
-| `fix` → patch, "Fixed"                                                   | ⬜     |                                                                     |
-| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                                       |
-| Release PR passes the title check                                        | ⬜     | With `GITHUB_TOKEN` checks wait for "Approve workflows to run"      |
-| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⚠️     | On #7: #8 dropped `OP#690`, but also the PR link. Lines need `(#N)` |
-| Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                     |
-| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                     |
-| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                     |
+| Test                                                                     | Status | Notes                                                                            |
+| ------------------------------------------------------------------------ | ------ | -------------------------------------------------------------------------------- |
+| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                                                  |
+| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⚠️     | PR #7 → #8 said 1.0.0, no `version.txt`. Fixed config                            |
+| `fix` → patch, "Fixed"                                                   | ⬜     |                                                                                  |
+| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                                                    |
+| Release PR passes the title check                                        | ⬜     | With `GITHUB_TOKEN` checks wait for "Approve workflows to run"                   |
+| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⚠️     | On #7: `OP#690` gone; PR link needs `(#N)` in the line (PR #11), then #8 correct |
+| Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                                  |
+| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                                  |
+| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                                  |
 
 ## Part 5 — Code style
 
