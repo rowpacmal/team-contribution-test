@@ -46,21 +46,21 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 ## Part 4 — Releases
 
-| Test                                                                     | Status | Notes                                                                            |
-| ------------------------------------------------------------------------ | ------ | -------------------------------------------------------------------------------- |
-| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                                                  |
-| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⚠️     | PR #7 → #8 said 1.0.0, no `version.txt`. Fixed config                            |
-| `fix` → patch, "Fixed"                                                   | ⬜     |                                                                                  |
-| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                                                    |
-| Release PR passes the title check                                        | ⬜     | With `GITHUB_TOKEN` checks wait for "Approve workflows to run"                   |
-| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⚠️     | On #7: `OP#690` gone; PR link needs `(#N)` in the line (PR #11), then #8 correct |
-| Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                                  |
-| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                                  |
-| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                                  |
-| Release PR checks run without "Approve" (release token)                  | ⬜     |                                                                                  |
-| Pre-release tag starts `release.yml` (dev channel, images, manifest)     | ⬜     |                                                                                  |
-| Release tag: `package.json` matches tag, `release.yml` runs              | ⬜     |                                                                                  |
-| Only changed services rebuilt (`frontend/` vs `backend/`)                | ⬜     |                                                                                  |
+| Test                                                                     | Status | Notes                                                                                    |
+| ------------------------------------------------------------------------ | ------ | ---------------------------------------------------------------------------------------- |
+| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                                                          |
+| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⚠️     | #8 said 1.0.0, no `version.txt`; fixed config (#9). Final: #15                           |
+| `fix` → patch, "Fixed"                                                   | ⬜     |                                                                                          |
+| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                                                            |
+| Release PR passes the title check                                        | ✅     | #15                                                                                      |
+| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⚠️     | On #7: `OP#690` gone; PR link needs `(#N)` in the line (PR #11), then #8 correct         |
+| Merging release PR → tag + GitHub Release with same notes                | ✅     | #15 → `v0.1.0`, Release notes = `CHANGELOG.md`, `package.json` 0.1.0                     |
+| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ✅     | `v0.1.0-dev.1`, `v0.1.0-dev.2` (version from release PR #15)                             |
+| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                                          |
+| Release PR checks run without "Approve" (release token)                  | ✅     | #15, with `RELEASE_PLEASE_TOKEN`                                                         |
+| Pre-release tag starts `release.yml` (dev channel, images, manifest)     | ✅     | `-dev.1`: both images to GHCR, manifest channel `development`                            |
+| Release tag: `package.json` matches tag, `release.yml` runs              | ✅     | `v0.1.0`: tag check passed, channel `release`, both images built (no earlier stable tag) |
+| Only changed services rebuilt (`frontend/` vs `backend/`)                | ⬜     | `-dev.2` with no changes skipped the build ✅; one-service change still to test          |
 
 ## Part 5 — Code style
 
@@ -101,3 +101,5 @@ Add one line per finding: what happened, what changed (PR link).
 - Release PRs made with `GITHUB_TOKEN` do get checks, but they wait for "Approve workflows to run" (GitHub blocks automatic runs). A release token would remove the click.
 - Changelog turned `OP#690` into `OP[#690]` linking to GitHub issue 690 (doesn't exist). Moved the ticket from the title to the PR description (OpenProject reads it there); title check now fails on `OP#` in the title.
 - `BEGIN_COMMIT_OVERRIDE` replaces the whole commit message, so the changelog line lost its `(#7)` PR link. Override lines now end with `(#N)` (Part 4). release-please only re-reads overrides on its next run; added a manual trigger (`workflow_dispatch`).
+- Changing `release-type` (`simple` → `node`) while a release PR was open: the release branch name now includes the package name, so release-please opened a new PR (#15) and left #8. Closed #8 by hand. Rule: pick the type before the first release PR (Part 4). Not an issue for Edge Studio, which starts with `node`.
+- #11's description mentioned the override marker in a sentence; release-please read the text after it as changelog lines ("commit could not be parsed"). Harmless for `docs`, would break a `feat`. Rule: only write the marker for a real override (Part 4, `open-pr`).
