@@ -9,6 +9,8 @@ A sandbox for testing the team's contribution rules (OP#690) and AI skills (OP#6
 
 ## Hard rules
 
+A Claude hook (`.claude/hooks/guard-git.mjs`) blocks commits, merges, and pushes on `main`, and hand-made tags. If it blocks you, follow the rule; don't work around the hook.
+
 Details and reasons are in CONTRIBUTING.md.
 
 - Never commit or push to `main`. Work on a `type/N-slug` branch and open a PR (Part 2).

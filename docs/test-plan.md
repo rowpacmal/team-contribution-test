@@ -6,14 +6,15 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 ## Setup
 
-| Item                                                                              | Status | Notes                                                                                                 |
-| --------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------- |
-| Audit of the proposal; contradictions fixed                                       | ✅     | PR #1. Parts merged into `CONTRIBUTING.md`                                                            |
-| Repo settings: squash-only, PR title default, auto-delete, Actions can create PRs | ✅     | Applied via API                                                                                       |
-| Title check, template, CODEOWNERS, release-please, pre-release workflow           | ✅     | PR #2, merged                                                                                         |
-| `AGENTS.md`, `CLAUDE.md` → `@AGENTS.md`, skills                                   | ✅     | PR #3, merged                                                                                         |
-| Lint/format CI, dummy code, Claude format hook                                    | ⬜     | PR #4                                                                                                 |
-| Branch protection / CODEOWNERS enforcement                                        | ❌     | Skipped: needs public repo or Pro; nice-to-have (Part 3). Claude hook guards `main` instead (next PR) |
+| Item                                                                              | Status | Notes                                                                                       |
+| --------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| Audit of the proposal; contradictions fixed                                       | ✅     | PR #1. Parts merged into `CONTRIBUTING.md`                                                  |
+| Repo settings: squash-only, PR title default, auto-delete, Actions can create PRs | ✅     | Applied via API                                                                             |
+| Title check, template, CODEOWNERS, release-please, pre-release workflow           | ✅     | PR #2, merged                                                                               |
+| `AGENTS.md`, `CLAUDE.md` → `@AGENTS.md`, skills                                   | ✅     | PR #3, merged                                                                               |
+| Lint/format CI, dummy code, Claude format hook                                    | ✅     | PR #4, merged                                                                               |
+| Branch protection / CODEOWNERS enforcement                                        | ❌     | Skipped: needs public repo or Pro; nice-to-have (Part 3). Claude hook guards `main` instead |
+| Claude hook blocks commit/merge/push on `main` and hand-made tags                 | ✅     | PR #5. Local tests: 13 block/allow cases; check live after merge                            |
 
 ## Part 1 — Titles
 
@@ -87,3 +88,4 @@ Add one line per finding: what happened, what changed (PR link).
 - `jq` isn't installed everywhere; the format hook reads its input with Node (fallback Python). (PR #4)
 - Prettier reformats Markdown tables in the docs: big one-time diff, as expected for the format PR. (PR #4)
 - CI stopped each job at the first error, hiding the rest. Steps now run independently so a PR shows every problem at once. (PR #4)
+- Plain ESLint config doesn't know Node globals; the hook imports `process` from `node:process` instead of adding a globals config. (PR #5)
