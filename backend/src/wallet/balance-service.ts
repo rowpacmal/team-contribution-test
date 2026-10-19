@@ -12,3 +12,8 @@ export async function getBalance(client: NodeClient): Promise<number> {
   }
   return amount;
 }
+
+export function untested(a: number): number {
+  if (a > 1) return a * 2;
+  return a;
+}
