@@ -12,13 +12,13 @@ Common rules for how code is written, reviewed, merged, and released, so the tea
 
 ## Decisions at a glance
 
-| Part | Decision |
-|---|---|
-| 1. Commit and PR titles | `type(scope): subject OP#N` (Conventional Commits), enforced on PR titles; squash-merge uses the PR title |
-| 2. Branches and flow | Trunk-based: only `main`; short-lived `type/N-slug` branches; releases from tags; `dev` retired |
-| 3. PRs and reviews | AI review on every PR; human approval only for high-risk areas via `CODEOWNERS`; PR template; PRs under ~400 lines as a guideline |
-| 4. Releases | release-please writes version, `CHANGELOG.md`, tag, and GitHub Release from PR titles; dev/canary/release channels kept |
-| 5. Code style | Prettier + ESLint (TS), Ruff (Python), ShellCheck (shell), all in CI; file naming by use case; one-time format and rename PRs |
+| Part                       | Decision                                                                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Commit and PR titles    | `type(scope): subject OP#N` (Conventional Commits), enforced on PR titles; squash-merge uses the PR title                                                                       |
+| 2. Branches and flow       | Trunk-based: only `main`; short-lived `type/N-slug` branches; releases from tags; `dev` retired                                                                                 |
+| 3. PRs and reviews         | AI review on every PR; human approval only for high-risk areas via `CODEOWNERS`; PR template; PRs under ~400 lines as a guideline                                               |
+| 4. Releases                | release-please writes version, `CHANGELOG.md`, tag, and GitHub Release from PR titles; dev/canary/release channels kept                                                         |
+| 5. Code style              | Prettier + ESLint (TS), Ruff (Python), ShellCheck (shell), all in CI; file naming by use case; one-time format and rename PRs                                                   |
 | 6. Docs, skills, structure | Public shared repo in the main org, used by both orgs; a public `.github` repo per org for the PR template; `AGENTS.md` is the single AI rules source; shared skills via OP#692 |
 
 ## Checks before setup
@@ -55,24 +55,24 @@ Since we squash-merge, the PR title becomes the commit on `main`. Only PR titles
 
 ### Format rules
 
-| Part | Rule |
-|---|---|
-| `type` | Required. One of the types below. Lowercase. |
-| `(scope)` | Optional. The feature area, e.g. `minima`, `wallet`, `automation`, `ci`. |
+| Part      | Rule                                                                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `type`    | Required. One of the types below. Lowercase.                                                                      |
+| `(scope)` | Optional. The feature area, e.g. `minima`, `wallet`, `automation`, `ci`.                                          |
 | `subject` | Required. Short, present tense, lowercase start, no trailing period. Describes the change, not the files touched. |
-| `OP#N` | The OpenProject ticket. Required when a ticket exists; leave out for small chores with no ticket. |
-| `(#PR)` | Added automatically by GitHub on squash-merge. Do not type it. |
+| `OP#N`    | The OpenProject ticket. Required when a ticket exists; leave out for small chores with no ticket.                 |
+| `(#PR)`   | Added automatically by GitHub on squash-merge. Do not type it.                                                    |
 
 #### Types
 
-| Type | Use for |
-|---|---|
-| `feat` | New user- or operator-facing feature |
-| `fix` | Bug fix, including urgent hotfixes. Use `fix` (not `chore`) for anything that must ship: only `feat` and `fix` trigger a release (Part 4) |
-| `refactor` | Code change with no behavior change |
-| `docs` | Documentation only |
-| `test` | Tests only |
-| `chore` | Tooling, dependencies, CI, releases, housekeeping |
+| Type       | Use for                                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `feat`     | New user- or operator-facing feature                                                                                                      |
+| `fix`      | Bug fix, including urgent hotfixes. Use `fix` (not `chore`) for anything that must ship: only `feat` and `fix` trigger a release (Part 4) |
+| `refactor` | Code change with no behavior change                                                                                                       |
+| `docs`     | Documentation only                                                                                                                        |
+| `test`     | Tests only                                                                                                                                |
+| `chore`    | Tooling, dependencies, CI, releases, housekeeping                                                                                         |
 
 ### Examples
 
@@ -115,13 +115,13 @@ GitHub's revert button creates a `Revert "…"` title, which fails the title che
 
 ### How it is enforced
 
-| What | Where | Effort |
-|---|---|---|
-| PR title check (fails the PR if the title is wrong) | GitHub Action `amannn/action-semantic-pull-request` (free, open source). Must be configured: `types` limited to our six (the default allows all Conventional Commits types), and `subjectPattern` for lowercase start / no trailing period | ~1 hour |
-| `OP#N` matches the branch (soft check) | Same workflow: if the branch is `type/N-slug`, the title must contain `OP#N`. Titles without a ticket can't be checked, so that part stays by agreement | Small |
-| Squash-merge uses the PR title as the commit message | GitHub repo setting: *Pull Requests → Allow squash merging → Default to pull request title* (title only, empty body) | 1 minute |
-| AI writes titles in this format | Update the `commit-message` skill (switch to Conventional Commits, present tense, `OP#N`) | Small |
-| PRs show up on OpenProject tickets | OpenProject GitHub integration (admin setup: webhook + token) | Admin task, no code |
+| What                                                 | Where                                                                                                                                                                                                                                      | Effort              |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| PR title check (fails the PR if the title is wrong)  | GitHub Action `amannn/action-semantic-pull-request` (free, open source). Must be configured: `types` limited to our six (the default allows all Conventional Commits types), and `subjectPattern` for lowercase start / no trailing period | ~1 hour             |
+| `OP#N` matches the branch (soft check)               | Same workflow: if the branch is `type/N-slug`, the title must contain `OP#N`. Titles without a ticket can't be checked, so that part stays by agreement                                                                                    | Small               |
+| Squash-merge uses the PR title as the commit message | GitHub repo setting: _Pull Requests → Allow squash merging → Default to pull request title_ (title only, empty body)                                                                                                                       | 1 minute            |
+| AI writes titles in this format                      | Update the `commit-message` skill (switch to Conventional Commits, present tense, `OP#N`)                                                                                                                                                  | Small               |
+| PRs show up on OpenProject tickets                   | OpenProject GitHub integration (admin setup: webhook + token)                                                                                                                                                                              | Admin task, no code |
 
 ### To do
 
@@ -135,14 +135,14 @@ GitHub's revert button creates a `Revert "…"` title, which fails the title che
 
 All free and open source.
 
-| Tool | What it does |
-|---|---|
-| `action-semantic-pull-request` | Checks PR titles in CI |
-| `commitlint` | Checks commit messages (not needed for us, since we squash) |
-| `release-please` | Opens a "release PR" that bumps version, writes changelog, and tags on merge |
-| `git-cliff` | Generates changelog text from commits using a template we control |
-| `semantic-release` | Fully automatic release on every merge (likely too automatic for signed Pi releases) |
-| GitHub auto release notes | Built-in list of merged PRs on a GitHub Release |
+| Tool                           | What it does                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `action-semantic-pull-request` | Checks PR titles in CI                                                               |
+| `commitlint`                   | Checks commit messages (not needed for us, since we squash)                          |
+| `release-please`               | Opens a "release PR" that bumps version, writes changelog, and tags on merge         |
+| `git-cliff`                    | Generates changelog text from commits using a template we control                    |
+| `semantic-release`             | Fully automatic release on every merge (likely too automatic for signed Pi releases) |
+| GitHub auto release notes      | Built-in list of merged PRs on a GitHub Release                                      |
 
 ---
 
@@ -233,16 +233,16 @@ No hand-made tags. Users only ever receive **signed, tagged releases**. Unreleas
 
 ### Switching Edge Studio over (one-time)
 
-| Step | Notes |
-|---|---|
-| Finish or merge open work on `dev` | Coordinate with the team first |
-| Merge `dev` into `main` one last time | Make sure both are in step |
-| Make `main` the default branch | GitHub settings |
-| Archive / delete `dev` | After confirming nothing is left |
-| Delete stale branches | e.g. `backup/main`, `test/main-protection`, `truncated-copy*`, merged `task/*` |
-| CI: remove `require-dev-to-main.yml` and `check-dev.yml` | Run checks on every PR to `main` |
-| **Install command** | README one-liner and `install.sh` default use `main`. Under trunk-based, `main` holds unreleased work, so new installs must point at the **latest release** instead. Decided: CI publishes `install.sh` with each release (Part 4). Fully automatic — no manual steps for users. |
-| Update docs and AI rules | Changelog policy, `CLAUDE.md`/`AGENTS.md`/`.cursor` rules, skills — remove every reference to `dev` |
+| Step                                                     | Notes                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Finish or merge open work on `dev`                       | Coordinate with the team first                                                                                                                                                                                                                                                   |
+| Merge `dev` into `main` one last time                    | Make sure both are in step                                                                                                                                                                                                                                                       |
+| Make `main` the default branch                           | GitHub settings                                                                                                                                                                                                                                                                  |
+| Archive / delete `dev`                                   | After confirming nothing is left                                                                                                                                                                                                                                                 |
+| Delete stale branches                                    | e.g. `backup/main`, `test/main-protection`, `truncated-copy*`, merged `task/*`                                                                                                                                                                                                   |
+| CI: remove `require-dev-to-main.yml` and `check-dev.yml` | Run checks on every PR to `main`                                                                                                                                                                                                                                                 |
+| **Install command**                                      | README one-liner and `install.sh` default use `main`. Under trunk-based, `main` holds unreleased work, so new installs must point at the **latest release** instead. Decided: CI publishes `install.sh` with each release (Part 4). Fully automatic — no manual steps for users. |
+| Update docs and AI rules                                 | Changelog policy, `CLAUDE.md`/`AGENTS.md`/`.cursor` rules, skills — remove every reference to `dev`                                                                                                                                                                              |
 
 **Already-installed devices are not affected.** They update through the signed manifest, which only points at tagged releases.
 
@@ -291,14 +291,14 @@ No hand-made tags. Users only ever receive **signed, tagged releases**. Unreleas
 
 Listed in `CODEOWNERS`. For Edge Studio, a starting list:
 
-| Area | Paths (examples) |
-|---|---|
-| Auth | `backend/src/features/auth/`, `backend/src/features/integritas-auth/` |
-| Crypto / secrets | `backend/src/shared/crypto.ts`, `backend/src/features/settings/secrets.service.ts` |
-| Wallet / money movement | `backend/src/features/wallet/` |
-| Minima backup / console | `backend/src/features/minima/minima-backup*`, `minima-console*` |
-| Update / install trust chain | `update-agent/`, `install.sh`, `host-agent/` |
-| CI and release | `.github/`, `scripts/release/` |
+| Area                         | Paths (examples)                                                                   |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| Auth                         | `backend/src/features/auth/`, `backend/src/features/integritas-auth/`              |
+| Crypto / secrets             | `backend/src/shared/crypto.ts`, `backend/src/features/settings/secrets.service.ts` |
+| Wallet / money movement      | `backend/src/features/wallet/`                                                     |
+| Minima backup / console      | `backend/src/features/minima/minima-backup*`, `minima-console*`                    |
+| Update / install trust chain | `update-agent/`, `install.sh`, `host-agent/`                                       |
+| CI and release               | `.github/`, `scripts/release/`                                                     |
 
 This mirrors the 90%-coverage "high-risk" list already in our testing rules. Each project defines its own list.
 
@@ -306,18 +306,23 @@ This mirrors the 90%-coverage "high-risk" list already in our testing rules. Eac
 
 ```markdown
 ## Summary
+
 What changed and why, in a few sentences.
 
 ## Ticket
+
 OP#
 
 ## Verification
+
 What you ran or tested (checks, manual testing, device testing).
 
 ## Risks / Notes
+
 Anything reviewers or operators should know. Follow-up work.
 
 ## Checklist
+
 - [ ] Title describes what users notice (`feat`/`fix` titles become the changelog)
 - [ ] Docs updated (README / SECURITY / guides) if behavior changed
 - [ ] Tests added or updated
@@ -326,11 +331,11 @@ Anything reviewers or operators should know. Follow-up work.
 
 ### AI review tools
 
-| Tool | Role | Status |
-|---|---|---|
-| **Codex Security** (GitHub app) | Security findings | Planned. Check what our OpenAI plan includes. |
-| **Claude Code GitHub Action** (`anthropics/claude-code-action`) | General code review | Trial for 2–3 weeks, then decide. Official Anthropic action. Can read our existing `CLAUDE.md` rules. |
-| PR-Agent (Qodo) | Backup option | Not planned. Legit and established, but had real security bugs in 2024–25 (fixed). No reason to pick it while we use Claude. |
+| Tool                                                            | Role                | Status                                                                                                                       |
+| --------------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Codex Security** (GitHub app)                                 | Security findings   | Planned. Check what our OpenAI plan includes.                                                                                |
+| **Claude Code GitHub Action** (`anthropics/claude-code-action`) | General code review | Trial for 2–3 weeks, then decide. Official Anthropic action. Can read our existing `CLAUDE.md` rules.                        |
+| PR-Agent (Qodo)                                                 | Backup option       | Not planned. Legit and established, but had real security bugs in 2024–25 (fixed). No reason to pick it while we use Claude. |
 
 AI reviewers **comment, they do not block**. CI and `CODEOWNERS` do the blocking.
 
@@ -346,10 +351,10 @@ Anyone can open a PR or comment on a public repo. An AI bot reads that text, so 
 
 ### Enforcement and GitHub plans
 
-| | Public repo | Private repo |
-|---|---|---|
-| Free org | Rules enforced | Rules **not** enforced; CODEOWNERS still auto-requests reviewers; CI still runs |
-| Team org (~$4/user/month) | Rules enforced | Rules enforced |
+|                           | Public repo    | Private repo                                                                    |
+| ------------------------- | -------------- | ------------------------------------------------------------------------------- |
+| Free org                  | Rules enforced | Rules **not** enforced; CODEOWNERS still auto-requests reviewers; CI still runs |
+| Team org (~$4/user/month) | Rules enforced | Rules enforced                                                                  |
 
 **Decision:** enforcement is a nice-to-have. On private repos with a Free plan, the team follows these rules by agreement. We do not need the Team plan for this.
 
@@ -393,21 +398,21 @@ PR title  ──squash-merge──►  commit on main  ──release-please─�
                                                      Devices update; Update page shows CHANGELOG.md
 ```
 
-| Thing | What it is | Who writes it |
-|---|---|---|
-| PR title | One line describing the change (Part 1 format) | Author / AI |
-| Commit on `main` | Same as the PR title (squash-merge) | GitHub, automatically |
-| `CHANGELOG.md` | All releases, one line per `feat`/`fix` PR | release-please |
-| GitHub Release | Notes for one version, attached to the tag | release-please (same text) |
-| Update page in the app | Shows `CHANGELOG.md` for the new version | Already works today |
+| Thing                  | What it is                                     | Who writes it              |
+| ---------------------- | ---------------------------------------------- | -------------------------- |
+| PR title               | One line describing the change (Part 1 format) | Author / AI                |
+| Commit on `main`       | Same as the PR title (squash-merge)            | GitHub, automatically      |
+| `CHANGELOG.md`         | All releases, one line per `feat`/`fix` PR     | release-please             |
+| GitHub Release         | Notes for one version, attached to the tag     | release-please (same text) |
+| Update page in the app | Shows `CHANGELOG.md` for the new version       | Already works today        |
 
 ### What ends up in the changelog
 
-| PR type | In changelog? | Section |
-|---|---|---|
-| `feat` | Yes | Added |
-| `fix` | Yes | Fixed |
-| `refactor`, `docs`, `test`, `chore` | No (hidden) | — |
+| PR type                             | In changelog? | Section |
+| ----------------------------------- | ------------- | ------- |
+| `feat`                              | Yes           | Added   |
+| `fix`                               | Yes           | Fixed   |
+| `refactor`, `docs`, `test`, `chore` | No (hidden)   | —       |
 
 Section names are configured in release-please (`changelog-sections`) to match Keep a Changelog wording.
 
@@ -426,16 +431,17 @@ Section names are configured in release-please (`changelog-sections`) to match K
   fix(minima): resync no longer shows failure when the node recovers
   END_COMMIT_OVERRIDE
   ```
+
 - **Fixing a line after merge:** edit the merged PR's description with an override block; release-please picks it up while the release PR is still open.
 
 ### Versioning
 
 Semantic Versioning, handled by release-please:
 
-| Change | Bump (while below 1.0) | Example |
-|---|---|---|
-| `fix` | Patch | 0.43.0 → 0.43.1 |
-| `feat` | Minor | 0.43.1 → 0.44.0 |
+| Change                                 | Bump (while below 1.0)  | Example         |
+| -------------------------------------- | ----------------------- | --------------- |
+| `fix`                                  | Patch                   | 0.43.0 → 0.43.1 |
+| `feat`                                 | Minor                   | 0.43.1 → 0.44.0 |
 | Breaking change (`feat!:`, see Part 1) | Minor (major after 1.0) | 0.44.0 → 0.45.0 |
 
 By default release-please bumps the **major** version for breaking changes even below 1.0 (0.44.0 → 1.0.0). Set `"bump-minor-pre-major": true` in `release-please-config.json` to get the table above.
@@ -444,11 +450,11 @@ Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only 
 
 ### Release channels (Edge Studio)
 
-| Channel | Tag | Who gets it |
-|---|---|---|
-| development | `v0.44.0-dev.N` | Dev / test devices |
-| canary | `v0.44.0-canary.N` | Early testers (kept until further notice) |
-| release | `v0.44.0` | All users |
+| Channel     | Tag                | Who gets it                               |
+| ----------- | ------------------ | ----------------------------------------- |
+| development | `v0.44.0-dev.N`    | Dev / test devices                        |
+| canary      | `v0.44.0-canary.N` | Early testers (kept until further notice) |
+| release     | `v0.44.0`          | All users                                 |
 
 - **Pre-release tags are made with a one-click button** (GitHub Actions "Run workflow"). It tags the current `main` as the **next** version plus `-dev.N` or `-canary.N`. No hand-made tags.
   - release-please does not compute "next version" for pre-releases, so this is a small custom workflow: read the version from the open release PR title (`chore(main): release X.Y.Z`), fall back to the next patch of `.release-please-manifest.json` if there is none, then count existing `-dev.N` / `-canary.N` tags.
@@ -489,7 +495,8 @@ Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only 
   - CI would not run on the release PR, so required checks never pass and the PR can't be merged under branch protection.
 
   Use a GitHub App token, like the manifest deploy already does. The pre-release button needs the same token to push its tag, or `release.yml` won't run for `-dev.N` / `-canary.N` either.
-- With `GITHUB_TOKEN`, the repo (or org) setting *Actions → General → Allow GitHub Actions to create and approve pull requests* must be on, or release-please can't open the release PR.
+
+- With `GITHUB_TOKEN`, the repo (or org) setting _Actions → General → Allow GitHub Actions to create and approve pull requests_ must be on, or release-please can't open the release PR.
 
 ### To do
 
@@ -521,11 +528,11 @@ Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only 
 
 ### Tools per language
 
-| Language | Formatter | Linter | Status (Edge Studio) |
-|---|---|---|---|
-| TypeScript / JavaScript | Prettier | ESLint (`--max-warnings=0`) | ESLint done (OP#524). Prettier installed but **not enforced**: 512 of ~930 files are not formatted. |
-| Python | Ruff (format) | Ruff (lint) | Not set up (camera/sensor helpers, host-agent) |
-| Shell | — | ShellCheck | Not set up (`install.sh`, `bin/edge-studio`); only `bash -n` today |
+| Language                | Formatter     | Linter                      | Status (Edge Studio)                                                                                |
+| ----------------------- | ------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| TypeScript / JavaScript | Prettier      | ESLint (`--max-warnings=0`) | ESLint done (OP#524). Prettier installed but **not enforced**: 512 of ~930 files are not formatted. |
+| Python                  | Ruff (format) | Ruff (lint)                 | Not set up (camera/sensor helpers, host-agent)                                                      |
+| Shell                   | —             | ShellCheck                  | Not set up (`install.sh`, `bin/edge-studio`); only `bash -n` today                                  |
 
 All tools are free and open source.
 
@@ -533,15 +540,15 @@ TypeScript `strict` mode stays on in every package (already the case).
 
 ### File naming
 
-| What | Style | Example |
-|---|---|---|
-| React components | `PascalCase.tsx` | `AppShell.tsx` |
-| React hooks | `useSomething.ts` | `useMinimaResync.ts` |
-| Everything else (TS/JS) | `kebab-case.ts` | `data-sources.service.ts`, `automation-api.ts` |
-| Python | `snake_case.py` (PEP 8; required for importable modules) | `camera_helper.py` |
-| Shell scripts | `kebab-case.sh`; entry points on `PATH` have no extension | `install.sh`, `bin/edge-studio` |
+| What                    | Style                                                     | Example                                        |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| React components        | `PascalCase.tsx`                                          | `AppShell.tsx`                                 |
+| React hooks             | `useSomething.ts`                                         | `useMinimaResync.ts`                           |
+| Everything else (TS/JS) | `kebab-case.ts`                                           | `data-sources.service.ts`, `automation-api.ts` |
+| Python                  | `snake_case.py` (PEP 8; required for importable modules)  | `camera_helper.py`                             |
+| Shell scripts           | `kebab-case.sh`; entry points on `PATH` have no extension | `install.sh`, `bin/edge-studio`                |
 
-TS/JS is enforced with an ESLint filename rule after the one-time rename. Ruff's `N999` covers Python module names. Shell names are by agreement.
+TS/JS is enforced with an ESLint filename rule (`unicorn/filename-case`) after the one-time rename. Python names are checked by a small CI step (Ruff's `N999` only checks files inside packages). Shell names are by agreement.
 
 ### Editor settings
 
@@ -618,22 +625,22 @@ Today `CLAUDE.md`/`AGENTS.md`, `.claude/rules`/`.agents/rules`, and `.cursor/rul
 
 ### Shared skills to build (OP#692)
 
-| Skill | Does |
-|---|---|
-| `start-ticket` | Reads the OpenProject ticket, creates `type/N-slug` branch from `main`, moves ticket to In progress |
-| `commit-message` (update) | Writes a Part 1 title: `type(scope): subject OP#N`, present tense, user-facing for `feat`/`fix` |
-| `open-pr` | Opens the PR with the template filled in, using GitHub CLI |
-| `release` | Triggers a pre-release (`-dev.N` / `-canary.N`) or explains how to merge the release PR |
-| `plan-doc`, `session-notes` | Existing; review against the new rules |
+| Skill                       | Does                                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| `start-ticket`              | Reads the OpenProject ticket, creates `type/N-slug` branch from `main`, moves ticket to In progress |
+| `commit-message` (update)   | Writes a Part 1 title: `type(scope): subject OP#N`, present tense, user-facing for `feat`/`fix`     |
+| `open-pr`                   | Opens the PR with the template filled in, using GitHub CLI                                          |
+| `release`                   | Triggers a pre-release (`-dev.N` / `-canary.N`) or explains how to merge the release PR             |
+| `plan-doc`, `session-notes` | Existing; review against the new rules                                                              |
 
 ### Runbooks vs skills
 
-| Flow | How often | Form |
-|---|---|---|
-| Start ticket, commit, open PR | Daily | Skill |
-| Pre-release / release | Weekly-ish | Skill + short runbook |
-| Hotfix via `release/x.y.x` | Rare | Runbook |
-| Rollback / recovery on device | Rare, human | Runbook |
+| Flow                          | How often   | Form                  |
+| ----------------------------- | ----------- | --------------------- |
+| Start ticket, commit, open PR | Daily       | Skill                 |
+| Pre-release / release         | Weekly-ish  | Skill + short runbook |
+| Hotfix via `release/x.y.x`    | Rare        | Runbook               |
+| Rollback / recovery on device | Rare, human | Runbook               |
 
 ### Split between tickets
 
@@ -647,4 +654,3 @@ Today `CLAUDE.md`/`AGENTS.md`, `.claude/rules`/`.agents/rules`, and `.cursor/rul
 - [ ] Trim Edge Studio's `AGENTS.md`/rules to project-only content; make `CLAUDE.md` import `AGENTS.md`.
 - [ ] Check Cursor support for `AGENTS.md`.
 - [ ] Hand skill work to OP#692.
-

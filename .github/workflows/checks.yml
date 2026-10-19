@@ -1,0 +1,57 @@
+# Formatters and linters (CONTRIBUTING.md Part 5).
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # Prettier --check, ESLint --max-warnings=0 (incl. file naming), tsc strict
+      - run: npm run check
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Ruff lint
+        uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
+        with:
+          version: 0.17.1
+          args: check
+      - name: Ruff format
+        uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
+        with:
+          version: 0.17.1
+          args: format --check
+      # Ruff's N999 only checks files inside packages, so check loose scripts too.
+      - name: File names are snake_case
+        run: |
+          bad=$(git ls-files '*.py' | grep -vE '(^|/)[a-z_][a-z0-9_]*\.py$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Python file names must be snake_case:"
+            echo "$bad"
+            exit 1
+          fi
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # ShellCheck is preinstalled on ubuntu-latest.
+      - name: ShellCheck
+        run: |
+          shellcheck --version
+          git ls-files -z '*.sh' 'bin/*' | xargs -0 shellcheck

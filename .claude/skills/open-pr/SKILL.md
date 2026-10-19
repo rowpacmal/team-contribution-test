@@ -22,5 +22,6 @@ PR rules: CONTRIBUTING.md, Part 3 "Rules for every PR". Template: `.github/pull_
    ```
 
    Add `--draft` if the work isn't finished.
+
 6. Check the title check started: `gh pr checks <number> --watch`. If it fails, fix the title with `gh pr edit <number> --title "..."`.
 7. Give the user the PR URL. Don't merge unless asked; the author merges (Part 3).
