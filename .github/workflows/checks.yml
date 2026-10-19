@@ -1,4 +1,4 @@
-# Formatters and linters (CONTRIBUTING.md Part 5).
+# Formatters, linters, tests with coverage thresholds (CONTRIBUTING.md Part 5).
 name: Checks
 
 on:
@@ -29,6 +29,13 @@ jobs:
       - name: TypeScript
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm run typecheck
+      # Coverage thresholds per service, like Edge Studio (vitest.config.ts).
+      - name: Tests + coverage
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run test:coverage
+      - name: npm audit
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run audit
 
   python:
     runs-on: ubuntu-latest

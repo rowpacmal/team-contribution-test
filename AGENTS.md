@@ -33,5 +33,6 @@ Details and reasons are in CONTRIBUTING.md.
 
 - GitHub: `rowpacmal/team-contribution-test`, private, personal Free account. Branch protection and CODEOWNERS enforcement are not available until it is public.
 - No OpenProject access from here. Ask the user for the ticket number; current tickets are OP#690 (rules) and OP#692 (AI configs and skills).
-- Checks: `npm run check` (Prettier, ESLint, tsc). Python: `uvx ruff check` / `uvx ruff format`. Shell: ShellCheck. CI runs all of them (`.github/workflows/checks.yml`). A Claude hook formats each file after edit.
+- Dummy code mimics Edge Studio: `backend/` and `frontend/`, vitest tests with Edge Studio's coverage thresholds (`vitest.config.ts`).
+- Checks: `npm run check` (Prettier, ESLint, tsc, vitest with coverage, `npm audit`). Python: `uvx ruff check` / `uvx ruff format`. Shell: ShellCheck. CI runs all of them (`.github/workflows/checks.yml`). A Claude hook formats each file after edit.
 - release-please uses `release-type: simple` (`version.txt`). No `RELEASE_PLEASE_TOKEN` yet, so it runs with `GITHUB_TOKEN`.
