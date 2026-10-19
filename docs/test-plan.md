@@ -14,7 +14,7 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | `AGENTS.md`, `CLAUDE.md` → `@AGENTS.md`, skills                                   | ✅     | PR #3, merged                                                                               |
 | Lint/format CI, dummy code, Claude format hook                                    | ✅     | PR #4, merged                                                                               |
 | Branch protection / CODEOWNERS enforcement                                        | ❌     | Skipped: needs public repo or Pro; nice-to-have (Part 3). Claude hook guards `main` instead |
-| Claude hook blocks commit/merge/push on `main` and hand-made tags                 | ✅     | PR #5. Local tests: 13 block/allow cases; check live after merge                            |
+| Claude hook blocks commit/merge/push on `main` and hand-made tags                 | ✅     | PR #5. Live: `git push --dry-run origin HEAD:main` and `git tag v0.0.0-test` blocked        |
 
 ## Part 1 — Titles
 
@@ -67,7 +67,7 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | Bad TS/TSX/hook file names fail ESLint                                  | ✅     | Local: `formatBalance.ts`, `balance-card.tsx`, `use-thing.ts` all caught |
 | Bad Python file name fails CI                                           | ✅     | PR #4, `CameraTool.py`                                                   |
 | A lint/format error fails the PR                                        | ✅     | PR #4: Prettier, ESLint (`any`), Ruff F401, ShellCheck SC2086 all failed |
-| Claude hook formats files after edit (TS via Prettier, Python via Ruff) | ✅     | Local run of the hook script; check in a real session                    |
+| Claude hook formats files after edit (TS via Prettier, Python via Ruff) | ✅     | Live: messy `.ts` (Prettier) and `.py` (Ruff) fixed on Write             |
 | One-time format of existing files                                       | ✅     | PR #4 (docs only so far)                                                 |
 
 ## Part 6 — Shared repo
@@ -89,3 +89,4 @@ Add one line per finding: what happened, what changed (PR link).
 - Prettier reformats Markdown tables in the docs: big one-time diff, as expected for the format PR. (PR #4)
 - CI stopped each job at the first error, hiding the rest. Steps now run independently so a PR shows every problem at once. (PR #4)
 - Plain ESLint config doesn't know Node globals; the hook imports `process` from `node:process` instead of adding a globals config. (PR #5)
+- Hooks added mid-session don't load until Claude Code restarts; a push to `main` went through in that session. Live test passed in a new session.
