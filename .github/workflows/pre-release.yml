@@ -1,0 +1,53 @@
+# One-click pre-release: tags main as the next version plus -dev.N or -canary.N.
+# See CONTRIBUTING.md Part 4, "Release channels".
+name: Pre-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Channel
+        type: choice
+        options: [dev, canary]
+        default: dev
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency: pre-release
+
+jobs:
+  tag:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          # Same token issue as release-please: a tag pushed with GITHUB_TOKEN won't start release.yml.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+
+      - name: Tag next pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          set -euo pipefail
+
+          # Next version = the one in the open release PR ("chore(main): release X.Y.Z").
+          next=$(gh pr list --base main --state open --label "autorelease: pending" \
+            --json title --jq '.[0].title // ""' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+$' || true)
+
+          # No release PR yet: next patch after the last release.
+          if [ -z "$next" ]; then
+            IFS=. read -r major minor patch < <(jq -r '."."' .release-please-manifest.json)
+            next="$major.$minor.$((patch + 1))"
+          fi
+
+          last=$(git tag -l "v$next-$CHANNEL.*" | sed "s/^v$next-$CHANNEL\.//" | sort -n | tail -1)
+          tag="v$next-$CHANNEL.$(( ${last:-0} + 1 ))"
+
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "$tag"
+          echo "Tagged \`$tag\` at \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
