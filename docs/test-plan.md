@@ -22,7 +22,8 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | ------------------------------------------------------------- | ------ | -------------------------------------------------------- |
 | Valid title passes                                            | ✅     | PR #2                                                    |
 | Wrong type / capitalized subject / trailing period fails      | ✅     | Capitalized + period tested on PR #2; wrong type not yet |
-| `type/N-slug` branch without `OP#N` in title fails            | ⬜     |                                                          |
+| `type/N-slug` branch without `OP#N` in description fails      | ⬜     |                                                          |
+| `OP#N` in the title fails                                     | ⬜     |                                                          |
 | Editing the title re-runs the check                           | ✅     | PR #2                                                    |
 | GitHub revert button → title fails → rename per Part 1 passes | ⬜     |                                                          |
 | Squash commit on `main` equals PR title + `(#PR)`, empty body | ✅     | PRs #1–#3                                                |
@@ -93,4 +94,4 @@ Add one line per finding: what happened, what changed (PR link).
 - First release PR (#8) said 1.0.0: with no release tag, release-please ignores the manifest `0.0.0` and uses 1.0.0. Added `"initial-version": "0.1.0"`, noted in Part 4.
 - `release-type: simple` only updates `version.txt` if it already exists; #8 didn't touch it. Added `version.txt` (`0.0.0`).
 - Release PRs made with `GITHUB_TOKEN` do get checks, but they wait for "Approve workflows to run" (GitHub blocks automatic runs). A release token would remove the click.
-- Changelog turns `OP#690` into `OP[#690]` linking to GitHub issue 690 (doesn't exist). Open: decide how to handle.
+- Changelog turned `OP#690` into `OP[#690]` linking to GitHub issue 690 (doesn't exist). Moved the ticket from the title to the PR description (OpenProject reads it there); title check now fails on `OP#` in the title.
