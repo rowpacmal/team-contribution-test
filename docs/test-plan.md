@@ -18,10 +18,10 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 | Test | Status | Notes |
 |---|---|---|
-| Valid title passes | ⬜ | |
-| Wrong type / capitalized subject / trailing period fails | ⬜ | |
+| Valid title passes | ✅ | PR #2 |
+| Wrong type / capitalized subject / trailing period fails | ✅ | Capitalized + period tested on PR #2; wrong type not yet |
 | `type/N-slug` branch without `OP#N` in title fails | ⬜ | |
-| Editing the title re-runs the check | ⬜ | |
+| Editing the title re-runs the check | ✅ | PR #2 |
 | GitHub revert button → title fails → rename per Part 1 passes | ⬜ | |
 | Squash commit on `main` equals PR title + `(#PR)`, empty body | ⬜ | |
 
