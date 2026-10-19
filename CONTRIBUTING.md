@@ -68,7 +68,7 @@ Since we squash-merge, the PR title becomes the commit on `main`. Only PR titles
 | Type | Use for |
 |---|---|
 | `feat` | New user- or operator-facing feature |
-| `fix` | Bug fix, including urgent hotfixes (release-please only makes a patch release for `fix`) |
+| `fix` | Bug fix, including urgent hotfixes. Use `fix` (not `chore`) for anything that must ship: only `feat` and `fix` trigger a release (Part 4) |
 | `refactor` | Code change with no behavior change |
 | `docs` | Documentation only |
 | `test` | Tests only |
@@ -82,7 +82,8 @@ fix(wallet): handle empty balance OP#652
 refactor(auth): replace native bcrypt with built-in scrypt OP#216
 docs: add contribution guide OP#690
 chore(ci): add PR title check
-chore: release v0.43.0
+feat(api)!: remove v1 device endpoints OP#701
+chore(main): release 0.43.0               ← written by release-please, not by hand
 ```
 
 Not allowed:
@@ -91,7 +92,19 @@ Not allowed:
 [#536] Improve Minima resync status      ← old format
 Truncated copy2                          ← no type, unclear
 Fixed table bug                          ← no type, past tense
+Revert "feat(minima): show resync…"     ← GitHub's default revert title, rename it (see below)
 ```
+
+#### Breaking changes
+
+Mark them with `!` after the type/scope in the title: `feat(api)!: …`. This is the only supported way. Squash commits use the PR title with an empty body, so a `BREAKING CHANGE:` footer would never reach `main`.
+
+#### Reverts
+
+GitHub's revert button creates a `Revert "…"` title, which fails the title check. Rename the revert PR before merging:
+
+- Reverting a released `feat`/`fix`: `fix(scope): revert <original subject> OP#N` (users will notice, so it goes in the changelog).
+- Reverting something not yet released, or internal-only: `chore(scope): revert <original subject> OP#N`.
 
 ### Why
 
@@ -104,8 +117,9 @@ Fixed table bug                          ← no type, past tense
 
 | What | Where | Effort |
 |---|---|---|
-| PR title check (fails the PR if the title is wrong) | GitHub Action, e.g. `amannn/action-semantic-pull-request` (free, open source) | ~1 hour |
-| Squash-merge uses the PR title as the commit message | GitHub repo setting: *Pull Requests → Allow squash merging → Default to pull request title* | 1 minute |
+| PR title check (fails the PR if the title is wrong) | GitHub Action `amannn/action-semantic-pull-request` (free, open source). Must be configured: `types` limited to our six (the default allows all Conventional Commits types), and `subjectPattern` for lowercase start / no trailing period | ~1 hour |
+| `OP#N` matches the branch (soft check) | Same workflow: if the branch is `type/N-slug`, the title must contain `OP#N`. Titles without a ticket can't be checked, so that part stays by agreement | Small |
+| Squash-merge uses the PR title as the commit message | GitHub repo setting: *Pull Requests → Allow squash merging → Default to pull request title* (title only, empty body) | 1 minute |
 | AI writes titles in this format | Update the `commit-message` skill (switch to Conventional Commits, present tense, `OP#N`) | Small |
 | PRs show up on OpenProject tickets | OpenProject GitHub integration (admin setup: webhook + token) | Admin task, no code |
 
@@ -173,9 +187,10 @@ Examples:
 feat/536-resync-progress
 fix/652-empty-balance
 chore/690-contribution-guide
-chore/release-0.43.0
 release/0.43.x            ← only for rare hotfix branches (see below)
 ```
+
+Release PR branches (`release-please--branches--main`) are created by release-please. Don't create them by hand.
 
 ### Day-to-day flow
 
@@ -188,7 +203,7 @@ Unfinished features may land on `main` as long as they are hidden (behind a sett
 
 ### Testing on devices
 
-Tag a **pre-release** from `main`:
+Press the **pre-release button** (Part 4). It tags `main` as the next version plus `-dev.N`:
 
 ```
 v0.43.0-dev.1, v0.43.0-dev.2, …
@@ -198,16 +213,16 @@ The release workflow already handles `-dev.` tags, so test devices get builds th
 
 ### Releasing
 
-1. A release is cut from `main` by tagging it, e.g. `v0.43.0`.
-2. If we adopt release-please (Part 4), this becomes: merge the release PR it keeps open, and it creates the tag, version bump, and changelog for us.
+1. release-please keeps a release PR open against `main` (Part 4).
+2. Merging it creates the version bump, changelog, tag (e.g. `v0.43.0`), and GitHub Release.
 3. The existing release workflow builds, signs, and publishes from the tag.
 
-Users only ever receive **signed, tagged releases**. Unreleased code on `main` never reaches them.
+No hand-made tags. Users only ever receive **signed, tagged releases**. Unreleased code on `main` never reaches them.
 
 ### Hotfixes
 
-- **Normal case:** fix via a regular PR into `main`, then cut a patch release (`v0.43.1`).
-- **If `main` has unreleased work we do not want to ship yet:** create `release/0.43.x` from the last release tag, cherry-pick the fix, tag `v0.43.1` from that branch. Delete the branch when no longer needed. This should be rare.
+- **Normal case:** `fix` PR into `main`, then merge the release PR → patch release (`v0.43.1`).
+- **If `main` has unreleased work we do not want to ship yet:** create `release/0.43.x` from the last release tag, cherry-pick the fix in a `fix` PR into that branch. release-please opens a release PR for `release/0.43.x` (the workflow must run on `release/*` branches too); merge it to tag `v0.43.1`. Delete the branch when no longer needed. This should be rare.
 
 ### GitHub settings
 
@@ -226,7 +241,7 @@ Users only ever receive **signed, tagged releases**. Unreleased code on `main` n
 | Archive / delete `dev` | After confirming nothing is left |
 | Delete stale branches | e.g. `backup/main`, `test/main-protection`, `truncated-copy*`, merged `task/*` |
 | CI: remove `require-dev-to-main.yml` and `check-dev.yml` | Run checks on every PR to `main` |
-| **Install command** | README one-liner and `install.sh` default use `main`. Under trunk-based, `main` holds unreleased work, so new installs must point at the **latest release** instead. Options: CI keeps a `stable` branch/tag pointing at the latest release, or CI publishes `install.sh` per release to the manifests repo / website. Fully automatic — no manual steps for users. |
+| **Install command** | README one-liner and `install.sh` default use `main`. Under trunk-based, `main` holds unreleased work, so new installs must point at the **latest release** instead. Decided: CI publishes `install.sh` with each release (Part 4). Fully automatic — no manual steps for users. |
 | Update docs and AI rules | Changelog policy, `CLAUDE.md`/`AGENTS.md`/`.cursor` rules, skills — remove every reference to `dev` |
 
 **Already-installed devices are not affected.** They update through the signed manifest, which only points at tagged releases.
@@ -234,7 +249,6 @@ Users only ever receive **signed, tagged releases**. Unreleased code on `main` n
 ### To do
 
 - [ ] Agree on a switch date with the team.
-- [ ] Decide how new installs find the latest release (`stable` pointer vs published `install.sh`).
 - [ ] Apply GitHub settings (branch protection, auto-delete, squash-only).
 - [ ] Update CI workflows.
 - [ ] Update docs, AI rules, and skills.
@@ -291,20 +305,20 @@ This mirrors the 90%-coverage "high-risk" list already in our testing rules. Eac
 ### PR template
 
 ```markdown
-### Summary
+## Summary
 What changed and why, in a few sentences.
 
-### Ticket
+## Ticket
 OP#
 
-### Verification
+## Verification
 What you ran or tested (checks, manual testing, device testing).
 
-### Risks / Notes
+## Risks / Notes
 Anything reviewers or operators should know. Follow-up work.
 
-### Checklist
-- [ ] Changelog updated (user- or operator-facing change)
+## Checklist
+- [ ] Title describes what users notice (`feat`/`fix` titles become the changelog)
 - [ ] Docs updated (README / SECURITY / guides) if behavior changed
 - [ ] Tests added or updated
 - [ ] Screenshots attached (UI changes)
@@ -342,7 +356,7 @@ Anyone can open a PR or comment on a public repo. An AI bot reads that text, so 
 ### To do
 
 - [ ] Add the PR template to each org's `.github` repo (see Part 6).
-- [ ] Add `CODEOWNERS` with the high-risk list; turn on "Require review from Code Owners" for `main`.
+- [ ] Add `CODEOWNERS` with the high-risk list; turn on "Require review from Code Owners" for `main` (only possible on public repos or paid plans, see above).
 - [ ] Set up Claude Code GitHub Action with the safety setup above; trial for 2–3 weeks.
 - [ ] Set up Codex Security GitHub app; confirm cost/credits with our OpenAI plan.
 - [ ] Use a team Anthropic API key (org secret) for the Claude action, not a personal subscription token.
@@ -422,7 +436,11 @@ Semantic Versioning, handled by release-please:
 |---|---|---|
 | `fix` | Patch | 0.43.0 → 0.43.1 |
 | `feat` | Minor | 0.43.1 → 0.44.0 |
-| Breaking change (`feat!:` or `BREAKING CHANGE:`) | Minor (major after 1.0) | 0.44.0 → 0.45.0 |
+| Breaking change (`feat!:`, see Part 1) | Minor (major after 1.0) | 0.44.0 → 0.45.0 |
+
+By default release-please bumps the **major** version for breaking changes even below 1.0 (0.44.0 → 1.0.0). Set `"bump-minor-pre-major": true` in `release-please-config.json` to get the table above.
+
+Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only `refactor`/`docs`/`test`/`chore` PRs opens no release PR.
 
 ### Release channels (Edge Studio)
 
@@ -433,6 +451,7 @@ Semantic Versioning, handled by release-please:
 | release | `v0.44.0` | All users |
 
 - **Pre-release tags are made with a one-click button** (GitHub Actions "Run workflow"). It tags the current `main` as the **next** version plus `-dev.N` or `-canary.N`. No hand-made tags.
+  - release-please does not compute "next version" for pre-releases, so this is a small custom workflow: read the version from the open release PR title (`chore(main): release X.Y.Z`), fall back to the next patch of `.release-please-manifest.json` if there is none, then count existing `-dev.N` / `-canary.N` tags.
 - Pre-release numbers always point at the next upcoming version (not ahead of it, like the old `v0.50.0-dev.*` while stable was `0.42`).
 - Stable releases only come from merging the release-please PR.
 
@@ -447,7 +466,7 @@ Semantic Versioning, handled by release-please:
 ### Hotfixes
 
 - **Normal:** `fix` PR into `main`, merge the release PR → patch release.
-- **If `main` has unreleased work we cannot ship:** `release/0.44.x` branch from the last tag, cherry-pick the fix, release from that branch (release-please supports release branches). Rare.
+- **If `main` has unreleased work we cannot ship:** `release/0.44.x` branch from the last tag, cherry-pick the fix in a `fix` PR, merge the release PR release-please opens for that branch (the release-please workflow must also run on `release/*`). Rare.
 
 ### Installer (Edge Studio)
 
@@ -465,11 +484,18 @@ Semantic Versioning, handled by release-please:
 
 - The Update page renders release-please's format (headings like `## [0.44.0](link) (2026-10-20)`, bold scope, PR links). update-agent's version heading check already accepts `## [0.44.0]`. Decide whether the app should hide links and `OP#N` when displaying.
 - update-agent currently strips unreleased sections from the changelog; with release-please, `CHANGELOG.md` on `main` only ever holds released versions, so that logic can be simplified later.
-- release-please needs a token that is allowed to trigger `release.yml` on the tag it creates (the default `GITHUB_TOKEN` does not trigger other workflows). Use a GitHub App token, like the manifest deploy already does.
+- release-please needs a token that is allowed to trigger other workflows. With the default `GITHUB_TOKEN`, GitHub does not start workflows from its actions, so:
+  - `release.yml` would not run on the tag it creates, and
+  - CI would not run on the release PR, so required checks never pass and the PR can't be merged under branch protection.
+
+  Use a GitHub App token, like the manifest deploy already does.
+- With `GITHUB_TOKEN`, the repo (or org) setting *Actions → General → Allow GitHub Actions to create and approve pull requests* must be on, or release-please can't open the release PR.
 
 ### To do
 
-- [ ] Add release-please config + workflow (shared reusable workflow, see Part 6).
+- [ ] Add release-please config + workflow (shared reusable workflow, see Part 6), running on `main` and `release/*`.
+- [ ] Set `bump-minor-pre-major: true`.
+- [ ] Create a GitHub App token for release-please.
 - [ ] Map changelog sections to Added / Fixed.
 - [ ] Add the one-click pre-release workflow (dev / canary).
 - [ ] Publish `install.sh` per release; update the README install command.
@@ -511,9 +537,11 @@ TypeScript `strict` mode stays on in every package (already the case).
 |---|---|---|
 | React components | `PascalCase.tsx` | `AppShell.tsx` |
 | React hooks | `useSomething.ts` | `useMinimaResync.ts` |
-| Everything else | `kebab-case.ts` | `data-sources.service.ts`, `automation-api.ts` |
+| Everything else (TS/JS) | `kebab-case.ts` | `data-sources.service.ts`, `automation-api.ts` |
+| Python | `snake_case.py` (PEP 8; required for importable modules) | `camera_helper.py` |
+| Shell scripts | `kebab-case.sh`; entry points on `PATH` have no extension | `install.sh`, `bin/edge-studio` |
 
-Enforced with an ESLint filename rule after the one-time rename.
+TS/JS is enforced with an ESLint filename rule after the one-time rename. Ruff's `N999` covers Python module names. Shell names are by agreement.
 
 ### Editor settings
 
@@ -527,7 +555,7 @@ A Claude Code hook runs Prettier on each file right after the AI edits it, so fo
 
 Do these right after the switch to trunk-based (Part 2), when no other work is open:
 
-1. **Format PR:** run Prettier on everything. Add the commit to `.git-blame-ignore-revs` so `git blame` skips it.
+1. **Format PR:** run Prettier on everything. After it is squash-merged, open a small follow-up PR that adds the merged commit's hash to `.git-blame-ignore-revs` so `git blame` skips it (the hash only exists after merge, and `main` takes no direct pushes).
 2. **Rename PR:** rename files to the naming rule (AI does it; TypeScript and tests catch broken imports). Git keeps the history.
 3. Then turn on the CI checks so it stays clean.
 
