@@ -429,13 +429,15 @@ Section names are configured in release-please (`changelog-sections`) to match K
 
   ```
   BEGIN_COMMIT_OVERRIDE
-  feat(minima): show resync progress after page reload
-  feat(minima): show resync event log on the Minima page
-  fix(minima): resync no longer shows failure when the node recovers
+  feat(minima): show resync progress after page reload (#152)
+  feat(minima): show resync event log on the Minima page (#152)
+  fix(minima): resync no longer shows failure when the node recovers (#152)
   END_COMMIT_OVERRIDE
   ```
 
-- **Fixing a line after merge:** edit the merged PR's description with an override block; release-please picks it up while the release PR is still open.
+  End each line with the PR number `(#N)`. The block replaces the whole commit message, so without it the changelog line loses its PR link.
+
+- **Fixing a line after merge:** edit the merged PR's description with an override block, while the release PR is still open. release-please reads it on its next run: the next merge to `main`, or run it now with `gh workflow run release-please.yml --ref main`.
 
 ### Versioning
 
