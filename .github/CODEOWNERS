@@ -1,0 +1,6 @@
+# High-risk areas: one human approval required (CONTRIBUTING.md Part 3).
+# Enforced only on public repos or paid plans; otherwise reviewers are just auto-requested.
+
+/.github/                      @rowpacmal
+/release-please-config.json    @rowpacmal
+/.release-please-manifest.json @rowpacmal
