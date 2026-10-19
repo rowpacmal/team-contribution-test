@@ -70,6 +70,7 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 | A lint/format error fails the PR                                        | ✅     | PR #4: Prettier, ESLint (`any`), Ruff F401, ShellCheck SC2086 all failed |
 | Claude hook formats files after edit (TS via Prettier, Python via Ruff) | ✅     | Live: messy `.ts` (Prettier) and `.py` (Ruff) fixed on Write             |
 | One-time format of existing files                                       | ✅     | PR #4 (docs only so far)                                                 |
+| Coverage below threshold fails the PR (Edge Studio numbers)             | ✅     | PR #13: untested function failed all four backend thresholds             |
 
 ## Part 6 — Shared repo
 
