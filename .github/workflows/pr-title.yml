@@ -1,4 +1,4 @@
-# Checks PR titles against CONTRIBUTING.md Part 1: `type(scope): subject OP#N`.
+# Checks PR titles against CONTRIBUTING.md Part 1: `type(scope): subject`.
 # The PR title becomes the squash commit on main and the changelog line.
 name: PR title
 
@@ -29,25 +29,32 @@ jobs:
           subjectPattern: ^(?![A-Z])(?!.*\.$).+$
           subjectPatternError: |
             The subject "{subject}" must start lowercase and not end with a period.
-            Example: feat(minima): show resync progress OP#536
+            Example: feat(minima): show resync progress
 
-      # Soft check: a `type/N-slug` branch means the title must reference OP#N.
+      # The ticket goes in the description, not the title (release-please would
+      # link OP#N to a GitHub issue). Soft check: a `type/N-slug` branch means the
+      # description must reference OP#N.
       # Values go through env, never interpolated into the script.
-      - name: Ticket matches branch
+      - name: Ticket in description
         env:
           TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
           BRANCH: ${{ github.head_ref }}
         run: |
           if [[ "$BRANCH" == release-please--* ]]; then
             exit 0
+          fi
+          if [[ "$TITLE" == *"OP#"* ]]; then
+            echo "::error::Put the ticket (OP#N) in the PR description, not the title"
+            exit 1
           fi
           if [[ ! "$BRANCH" =~ ^(feat|fix|refactor|docs|test|chore|release)/ ]]; then
             echo "::warning::Branch '$BRANCH' does not follow type/N-slug (CONTRIBUTING.md Part 2)"
           fi
           if [[ "$BRANCH" =~ ^[a-z]+/([0-9]+)- ]]; then
             n="${BASH_REMATCH[1]}"
-            if [[ ! "$TITLE" =~ OP#${n}([^0-9]|$) ]]; then
-              echo "::error::Branch is for ticket $n, but the title has no OP#$n"
+            if [[ ! "$BODY" =~ OP#${n}([^0-9]|$) ]]; then
+              echo "::error::Branch is for ticket $n, but the description has no OP#$n"
               exit 1
             fi
           fi

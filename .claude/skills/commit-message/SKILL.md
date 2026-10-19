@@ -12,7 +12,7 @@ The format and every rule are in CONTRIBUTING.md, Part 1. Read it before writing
 1. Look at the full change (`git diff origin/main...HEAD`, or the staged diff).
 2. Pick `type` and optional `scope` from Part 1.
 3. Write the subject: what changed from the user's or operator's point of view for `feat`/`fix`, what was done for internal types.
-4. Add `OP#N`. Take `N` from the branch name (`type/N-slug`) if there is one. The PR title check fails if the branch has a number and the title doesn't match.
+4. Don't put the ticket (`OP#N`) in the title. It goes in the PR description (`open-pr`); the title check fails if the title has `OP#`.
 5. Check the special cases in Part 1: breaking changes (`!`), reverts.
 6. Self-check against Part 1's "Not allowed" examples and the `subjectPattern` in `.github/workflows/pr-title.yml`.
 

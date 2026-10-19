@@ -11,6 +11,7 @@ PR rules: CONTRIBUTING.md, Part 3 "Rules for every PR". Template: `.github/pull_
 2. Check the size: `git diff --stat origin/main...HEAD`. If well over ~400 changed lines (not counting tests, generated files, or pure deletions), tell the user and suggest a split. Don't block.
 3. Write the title with the `commit-message` skill.
 4. Fill in every template section from the actual diff and what was really run:
+   - **Ticket:** `OP#N`, with `N` from the branch name (`type/N-slug`). The title check fails if the branch has a number and the description doesn't. No ticket: leave the section empty.
    - **Verification:** only what was actually run or tested. If nothing was, say so.
    - **Checklist:** tick only what is true.
    - Add a `BEGIN_COMMIT_OVERRIDE` block if the PR has several user-facing changes (Part 4).

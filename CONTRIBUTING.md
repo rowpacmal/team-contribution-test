@@ -14,7 +14,7 @@ Common rules for how code is written, reviewed, merged, and released, so the tea
 
 | Part                       | Decision                                                                                                                                                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Commit and PR titles    | `type(scope): subject OP#N` (Conventional Commits), enforced on PR titles; squash-merge uses the PR title                                                                       |
+| 1. Commit and PR titles    | `type(scope): subject` (Conventional Commits), enforced on PR titles; squash-merge uses the PR title; ticket `OP#N` in the PR description                                       |
 | 2. Branches and flow       | Trunk-based: only `main`; short-lived `type/N-slug` branches; releases from tags; `dev` retired                                                                                 |
 | 3. PRs and reviews         | AI review on every PR; human approval only for high-risk areas via `CODEOWNERS`; PR template; PRs under ~400 lines as a guideline                                               |
 | 4. Releases                | release-please writes version, `CHANGELOG.md`, tag, and GitHub Release from PR titles; dev/canary/release channels kept                                                         |
@@ -45,11 +45,13 @@ Common rules for how code is written, reviewed, merged, and released, so the tea
 
 ### Decision
 
-We use **Conventional Commits** for PR titles, with the OpenProject ticket at the end:
+We use **Conventional Commits** for PR titles:
 
 ```
-type(scope): subject OP#N
+type(scope): subject
 ```
+
+The OpenProject ticket (`OP#N`) goes in the PR description, not the title.
 
 Since we squash-merge, the PR title becomes the commit on `main`. Only PR titles are enforced. Commits inside a feature branch can be informal.
 
@@ -60,7 +62,6 @@ Since we squash-merge, the PR title becomes the commit on `main`. Only PR titles
 | `type`    | Required. One of the types below. Lowercase.                                                                      |
 | `(scope)` | Optional. The feature area, e.g. `minima`, `wallet`, `automation`, `ci`.                                          |
 | `subject` | Required. Short, present tense, lowercase start, no trailing period. Describes the change, not the files touched. |
-| `OP#N`    | The OpenProject ticket. Required when a ticket exists; leave out for small chores with no ticket.                 |
 | `(#PR)`   | Added automatically by GitHub on squash-merge. Do not type it.                                                    |
 
 #### Types
@@ -77,12 +78,12 @@ Since we squash-merge, the PR title becomes the commit on `main`. Only PR titles
 ### Examples
 
 ```
-feat(minima): show resync progress OP#536
-fix(wallet): handle empty balance OP#652
-refactor(auth): replace native bcrypt with built-in scrypt OP#216
-docs: add contribution guide OP#690
+feat(minima): show resync progress
+fix(wallet): handle empty balance
+refactor(auth): replace native bcrypt with built-in scrypt
+docs: add contribution guide
 chore(ci): add PR title check
-feat(api)!: remove v1 device endpoints OP#701
+feat(api)!: remove v1 device endpoints
 chore(main): release 0.43.0               ← written by release-please, not by hand
 ```
 
@@ -93,6 +94,7 @@ Not allowed:
 Truncated copy2                          ← no type, unclear
 Fixed table bug                          ← no type, past tense
 Revert "feat(minima): show resync…"     ← GitHub's default revert title, rename it (see below)
+feat(minima): show resync progress OP#536  ← ticket goes in the PR description
 ```
 
 #### Breaking changes
@@ -103,25 +105,25 @@ Mark them with `!` after the type/scope in the title: `feat(api)!: …`. This is
 
 GitHub's revert button creates a `Revert "…"` title, which fails the title check. Rename the revert PR before merging:
 
-- Reverting a released `feat`/`fix`: `fix(scope): revert <original subject> OP#N` (users will notice, so it goes in the changelog).
-- Reverting something not yet released, or internal-only: `chore(scope): revert <original subject> OP#N`.
+- Reverting a released `feat`/`fix`: `fix(scope): revert <original subject>` (users will notice, so it goes in the changelog).
+- Reverting something not yet released, or internal-only: `chore(scope): revert <original subject>`.
 
 ### Why
 
 - **Tools can read it.** Conventional Commits is the format used by release and changelog tools (release-please, git-cliff, commitlint). This lets us automate versioning and changelogs later (see Part 4).
 - **History is easy to scan.** The type shows at a glance what kind of change it was.
-- **`OP#N` instead of `[#N]`.** `[#536] … (#152)` mixes a ticket number and a GitHub PR number with the same `#` sign. `OP#N` is unambiguous, and it is the format OpenProject's GitHub integration uses to link PRs to tickets.
+- **Ticket in the description, not the title.** release-please turns any `#N` in a title into a link to GitHub issue N, so `OP#536` in the changelog becomes a broken link. OpenProject's GitHub integration reads `OP#N` from the PR description anyway, and every squash commit ends with `(#PR)`, so the ticket is one click away. `OP#N` instead of `[#N]` keeps it apart from GitHub's `#PR` numbers.
 - **Low cost.** AI writes most titles, and a CI check catches mistakes.
 
 ### How it is enforced
 
-| What                                                 | Where                                                                                                                                                                                                                                      | Effort              |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
-| PR title check (fails the PR if the title is wrong)  | GitHub Action `amannn/action-semantic-pull-request` (free, open source). Must be configured: `types` limited to our six (the default allows all Conventional Commits types), and `subjectPattern` for lowercase start / no trailing period | ~1 hour             |
-| `OP#N` matches the branch (soft check)               | Same workflow: if the branch is `type/N-slug`, the title must contain `OP#N`. Titles without a ticket can't be checked, so that part stays by agreement                                                                                    | Small               |
-| Squash-merge uses the PR title as the commit message | GitHub repo setting: _Pull Requests → Allow squash merging → Default to pull request title_ (title only, empty body)                                                                                                                       | 1 minute            |
-| AI writes titles in this format                      | Update the `commit-message` skill (switch to Conventional Commits, present tense, `OP#N`)                                                                                                                                                  | Small               |
-| PRs show up on OpenProject tickets                   | OpenProject GitHub integration (admin setup: webhook + token)                                                                                                                                                                              | Admin task, no code |
+| What                                                  | Where                                                                                                                                                                                                                                      | Effort              |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| PR title check (fails the PR if the title is wrong)   | GitHub Action `amannn/action-semantic-pull-request` (free, open source). Must be configured: `types` limited to our six (the default allows all Conventional Commits types), and `subjectPattern` for lowercase start / no trailing period | ~1 hour             |
+| Ticket in the description, not the title (soft check) | Same workflow: the title must not contain `OP#`; if the branch is `type/N-slug`, the description must contain `OP#N`. PRs without a ticket can't be checked, so that part stays by agreement                                               | Small               |
+| Squash-merge uses the PR title as the commit message  | GitHub repo setting: _Pull Requests → Allow squash merging → Default to pull request title_ (title only, empty body)                                                                                                                       | 1 minute            |
+| AI writes titles in this format                       | Update the `commit-message` skill (switch to Conventional Commits, present tense, no ticket in the title)                                                                                                                                  | Small               |
+| PRs show up on OpenProject tickets                    | OpenProject GitHub integration (admin setup: webhook + token)                                                                                                                                                                              | Admin task, no code |
 
 ### To do
 
@@ -278,7 +280,8 @@ No hand-made tags. Users only ever receive **signed, tagged releases**. Unreleas
 
 ### Rules for every PR
 
-- **Title** follows Part 1: `type(scope): subject OP#N`.
+- **Title** follows Part 1: `type(scope): subject`.
+- **Ticket:** `OP#N` in the template's Ticket section (Part 1).
 - **Fill in the PR template** (below).
 - **The author owns the PR**, even when AI wrote the code. Read the diff before asking for review or merging.
 - **Use draft PRs** for work in progress.
@@ -419,8 +422,8 @@ Section names are configured in release-please (`changelog-sections`) to match K
 #### Writing good titles (this is now the changelog)
 
 - `feat` and `fix` titles are read by **operators and users**. Describe what they will notice, not how it was built.
-  - Good: `feat(minima): show resync progress after page reload OP#536`
-  - Bad: `feat(minima): add resync operation repository OP#536`
+  - Good: `feat(minima): show resync progress after page reload`
+  - Bad: `feat(minima): add resync operation repository`
 - Internal-only work uses `refactor`, `chore`, `test`, or `docs`, so it stays out of the changelog.
 - **Need more than one line for a big PR?** Add an override block to the PR description before merging. release-please uses it instead of the title:
 
@@ -490,7 +493,7 @@ Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only 
 
 ### Things to check when setting up
 
-- The Update page renders release-please's format (headings like `## [0.44.0](link) (2026-10-20)`, bold scope, PR links). update-agent's version heading check already accepts `## [0.44.0]`. Decide whether the app should hide links and `OP#N` when displaying.
+- The Update page renders release-please's format (headings like `## [0.44.0](link) (2026-10-20)`, bold scope, PR links). update-agent's version heading check already accepts `## [0.44.0]`. Decide whether the app should hide links when displaying.
 - update-agent currently strips unreleased sections from the changelog; with release-please, `CHANGELOG.md` on `main` only ever holds released versions, so that logic can be simplified later.
 - release-please needs a token that is allowed to trigger other workflows. With the default `GITHUB_TOKEN`, GitHub does not start workflows from its actions, so:
   - `release.yml` would not run on the tag it creates, and
@@ -630,7 +633,7 @@ Today `CLAUDE.md`/`AGENTS.md`, `.claude/rules`/`.agents/rules`, and `.cursor/rul
 | Skill                       | Does                                                                                                |
 | --------------------------- | --------------------------------------------------------------------------------------------------- |
 | `start-ticket`              | Reads the OpenProject ticket, creates `type/N-slug` branch from `main`, moves ticket to In progress |
-| `commit-message` (update)   | Writes a Part 1 title: `type(scope): subject OP#N`, present tense, user-facing for `feat`/`fix`     |
+| `commit-message` (update)   | Writes a Part 1 title: `type(scope): subject`, present tense, user-facing for `feat`/`fix`          |
 | `open-pr`                   | Opens the PR with the template filled in, using GitHub CLI                                          |
 | `release`                   | Triggers a pre-release (`-dev.N` / `-canary.N`) or explains how to merge the release PR             |
 | `plan-doc`, `session-notes` | Existing; review against the new rules                                                              |
