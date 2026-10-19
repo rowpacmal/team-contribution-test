@@ -1,0 +1,53 @@
+# Checks PR titles against CONTRIBUTING.md Part 1: `type(scope): subject OP#N`.
+# The PR title becomes the squash commit on main and the changelog line.
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  title:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          types: |
+            feat
+            fix
+            refactor
+            docs
+            test
+            chore
+          requireScope: false
+          # Lowercase start, no trailing period.
+          subjectPattern: ^(?![A-Z])(?!.*\.$).+$
+          subjectPatternError: |
+            The subject "{subject}" must start lowercase and not end with a period.
+            Example: feat(minima): show resync progress OP#536
+
+      # Soft check: a `type/N-slug` branch means the title must reference OP#N.
+      # Values go through env, never interpolated into the script.
+      - name: Ticket matches branch
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if [[ "$BRANCH" == release-please--* ]]; then
+            exit 0
+          fi
+          if [[ ! "$BRANCH" =~ ^(feat|fix|refactor|docs|test|chore|release)/ ]]; then
+            echo "::warning::Branch '$BRANCH' does not follow type/N-slug (CONTRIBUTING.md Part 2)"
+          fi
+          if [[ "$BRANCH" =~ ^[a-z]+/([0-9]+)- ]]; then
+            n="${BASH_REMATCH[1]}"
+            if [[ ! "$TITLE" =~ OP#${n}([^0-9]|$) ]]; then
+              echo "::error::Branch is for ticket $n, but the title has no OP#$n"
+              exit 1
+            fi
+          fi
