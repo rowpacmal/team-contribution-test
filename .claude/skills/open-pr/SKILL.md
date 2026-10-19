@@ -14,7 +14,7 @@ PR rules: CONTRIBUTING.md, Part 3 "Rules for every PR". Template: `.github/pull_
    - **Ticket:** `OP#N`, with `N` from the branch name (`type/N-slug`). The title check fails if the branch has a number and the description doesn't. No ticket: leave the section empty.
    - **Verification:** only what was actually run or tested. If nothing was, say so.
    - **Checklist:** tick only what is true.
-   - Add a `BEGIN_COMMIT_OVERRIDE` block if the PR has several user-facing changes (Part 4).
+   - Add a `BEGIN_COMMIT_OVERRIDE` block if the PR has several user-facing changes (Part 4). Create the PR first so each line can end with its number `(#N)`.
 5. Push and create:
 
    ```bash

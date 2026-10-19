@@ -5,6 +5,8 @@ name: Release Please
 on:
   push:
     branches: [main, "release/**"]
+  # Manual run, e.g. after editing a BEGIN_COMMIT_OVERRIDE block on a merged PR.
+  workflow_dispatch:
 
 permissions:
   contents: write
