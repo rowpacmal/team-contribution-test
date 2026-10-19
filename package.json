@@ -1,0 +1,23 @@
+{
+  "name": "team-contribution-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run format:check && npm run lint && npm run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/react": "19.3.0",
+    "eslint": "10.13.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-unicorn": "78.0.0",
+    "prettier": "3.9.10",
+    "react": "19.3.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2"
+  }
+}

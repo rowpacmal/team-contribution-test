@@ -19,15 +19,16 @@ Details and reasons are in CONTRIBUTING.md.
 
 ## Skills
 
-| Skill | Use for |
-|---|---|
-| `start-ticket` | Create a branch for a ticket |
-| `commit-message` | Write a PR title / squash commit |
-| `open-pr` | Push and open a PR with the template filled in |
-| `release` | Pre-release tags and the release PR |
+| Skill            | Use for                                        |
+| ---------------- | ---------------------------------------------- |
+| `start-ticket`   | Create a branch for a ticket                   |
+| `commit-message` | Write a PR title / squash commit               |
+| `open-pr`        | Push and open a PR with the template filled in |
+| `release`        | Pre-release tags and the release PR            |
 
 ## Repo specifics
 
 - GitHub: `rowpacmal/team-contribution-test`, private, personal Free account. Branch protection and CODEOWNERS enforcement are not available until it is public.
 - No OpenProject access from here. Ask the user for the ticket number; current tickets are OP#690 (rules) and OP#692 (AI configs and skills).
+- Checks: `npm run check` (Prettier, ESLint, tsc). Python: `uvx ruff check` / `uvx ruff format`. Shell: ShellCheck. CI runs all of them (`.github/workflows/checks.yml`). A Claude hook formats each file after edit.
 - release-please uses `release-type: simple` (`version.txt`). No `RELEASE_PLEASE_TOKEN` yet, so it runs with `GITHUB_TOKEN`.
