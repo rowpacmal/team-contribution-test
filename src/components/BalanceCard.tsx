@@ -12,6 +12,7 @@ export function BalanceCard({ fetchBalance }: BalanceCardProps) {
     <section>
       <h2>Balance</h2>
       <p>{balance === null ? "Loading…" : formatBalance(balance)}</p>
+      {balance === 0 && <p>Your wallet is empty.</p>}
     </section>
   );
 }
