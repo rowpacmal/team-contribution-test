@@ -488,7 +488,7 @@ Only `feat` and `fix` (and breaking changes) trigger a release. A merge of only 
   - `release.yml` would not run on the tag it creates, and
   - CI would not run on the release PR, so required checks never pass and the PR can't be merged under branch protection.
 
-  Use a GitHub App token, like the manifest deploy already does.
+  Use a GitHub App token, like the manifest deploy already does. The pre-release button needs the same token to push its tag, or `release.yml` won't run for `-dev.N` / `-canary.N` either.
 - With `GITHUB_TOKEN`, the repo (or org) setting *Actions → General → Allow GitHub Actions to create and approve pull requests* must be on, or release-please can't open the release PR.
 
 ### To do
