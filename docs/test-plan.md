@@ -45,17 +45,17 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 ## Part 4 — Releases
 
-| Test                                                                     | Status | Notes                                             |
-| ------------------------------------------------------------------------ | ------ | ------------------------------------------------- |
-| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                   |
-| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⬜     |                                                   |
-| `fix` → patch, "Fixed"                                                   | ⬜     |                                                   |
-| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                     |
-| Release PR passes the title check                                        | ⬜     | With `GITHUB_TOKEN` checks won't run on it at all |
-| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⬜     |                                                   |
-| Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                   |
-| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                   |
-| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                   |
+| Test                                                                     | Status | Notes                                                          |
+| ------------------------------------------------------------------------ | ------ | -------------------------------------------------------------- |
+| Only `docs`/`chore` merged → no release PR                               | ✅     | After PRs #1–#3                                                |
+| `feat` merged → release PR `chore(main): release 0.1.0`, section "Added" | ⚠️     | PR #7 → #8 said 1.0.0, no `version.txt`. Fixed config          |
+| `fix` → patch, "Fixed"                                                   | ⬜     |                                                                |
+| `feat!:` below 1.0 → minor, not 1.0.0                                    | ⬜     | Checks `bump-minor-pre-major`                                  |
+| Release PR passes the title check                                        | ⬜     | With `GITHUB_TOKEN` checks wait for "Approve workflows to run" |
+| `BEGIN_COMMIT_OVERRIDE` in PR body, edited after merge                   | ⬜     |                                                                |
+| Merging release PR → tag + GitHub Release with same notes                | ⬜     |                                                                |
+| Pre-release button → `vX.Y.Z-dev.1`, then `-dev.2`                       | ⬜     |                                                                |
+| Pre-release with no release PR → next patch from manifest                | ⬜     |                                                                |
 
 ## Part 5 — Code style
 
@@ -90,3 +90,7 @@ Add one line per finding: what happened, what changed (PR link).
 - CI stopped each job at the first error, hiding the rest. Steps now run independently so a PR shows every problem at once. (PR #4)
 - Plain ESLint config doesn't know Node globals; the hook imports `process` from `node:process` instead of adding a globals config. (PR #5)
 - Hooks added mid-session don't load until Claude Code restarts; a push to `main` went through in that session. Live test passed in a new session.
+- First release PR (#8) said 1.0.0: with no release tag, release-please ignores the manifest `0.0.0` and uses 1.0.0. Added `"initial-version": "0.1.0"`, noted in Part 4.
+- `release-type: simple` only updates `version.txt` if it already exists; #8 didn't touch it. Added `version.txt` (`0.0.0`).
+- Release PRs made with `GITHUB_TOKEN` do get checks, but they wait for "Approve workflows to run" (GitHub blocks automatic runs). A release token would remove the click.
+- Changelog turns `OP#690` into `OP[#690]` linking to GitHub issue 690 (doesn't exist). Open: decide how to handle.
