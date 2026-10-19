@@ -60,12 +60,12 @@ Status: ⬜ not tested · ✅ works as written · ⚠️ works, rule changed · 
 
 | Test                                                                    | Status | Notes                                                                    |
 | ----------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
-| `npm run check` (Prettier, ESLint, tsc) passes in CI                    | ⬜     | PR #4                                                                    |
-| Ruff lint + format, Python name check pass in CI                        | ⬜     | PR #4                                                                    |
-| ShellCheck on `*.sh` and `bin/*` passes in CI                           | ⬜     | PR #4                                                                    |
+| `npm run check` (Prettier, ESLint, tsc) passes in CI                    | ✅     | PR #4                                                                    |
+| Ruff lint + format, Python name check pass in CI                        | ✅     | PR #4                                                                    |
+| ShellCheck on `*.sh` and `bin/*` passes in CI                           | ✅     | PR #4                                                                    |
 | Bad TS/TSX/hook file names fail ESLint                                  | ✅     | Local: `formatBalance.ts`, `balance-card.tsx`, `use-thing.ts` all caught |
-| Bad Python file name fails CI                                           | ⬜     |                                                                          |
-| A lint/format error fails the PR                                        | ⬜     |                                                                          |
+| Bad Python file name fails CI                                           | ✅     | PR #4, `CameraTool.py`                                                   |
+| A lint/format error fails the PR                                        | ✅     | PR #4: Prettier, ESLint (`any`), Ruff F401, ShellCheck SC2086 all failed |
 | Claude hook formats files after edit (TS via Prettier, Python via Ruff) | ✅     | Local run of the hook script; check in a real session                    |
 | One-time format of existing files                                       | ✅     | PR #4 (docs only so far)                                                 |
 
@@ -86,3 +86,4 @@ Add one line per finding: what happened, what changed (PR link).
 - Ruff `N999` only checks files inside packages (with `__init__.py`); loose scripts like `CameraTool.py` pass. Added a CI name check, fixed Part 5 text. (PR #4)
 - `jq` isn't installed everywhere; the format hook reads its input with Node (fallback Python). (PR #4)
 - Prettier reformats Markdown tables in the docs: big one-time diff, as expected for the format PR. (PR #4)
+- CI stopped each job at the first error, hiding the rest. Steps now run independently so a PR shows every problem at once. (PR #4)
